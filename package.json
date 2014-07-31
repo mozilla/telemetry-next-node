@@ -1,0 +1,22 @@
+{
+  "name":         "telemetry-js-node",
+  "version":      "0.1.0",
+  "author":       "Jonas Finnemann Jensen <jopsen@gmail.com>",
+  "description":  "node.js module for using telemetry.js to access telemetry aggregates from Mozilla Firefox",
+  "license":      "   MPL-2.0",
+  "scripts": {
+    "test":   "mocha --reporter spec test.js"
+  },
+  "repository": {
+    "type":   "git",
+    "url":    "https://github.com/mozilla/telemetry-js-node.git"
+  },
+  "dependencies": {
+    "superagent":                       "0.17.0",
+    "superagent-retry":                 "0.3.0"
+  },
+  "devDependencies": {
+    "mocha":                            "1.18.2",
+    "promise":                          "5.0.0"
+  }
+}
