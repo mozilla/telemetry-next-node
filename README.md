@@ -13,13 +13,15 @@ duly warned.
 
 The reasoning behind the decision to load `telemetry.js` dynamically is that
 the storage format used server-side is unstable and we will update
-`telemetry.js` as changes to the server-side storage format occurs.
+`telemetry.js` as changes to the server-side storage format occurs. For this
+reason you shouldn't expect this module to work in long running processes,
+reloading it, with `Telemetry.init`, may help.
 
 Usage
 -----
-This module can be used exactly like `telemetry.js`, refer to the official
-[documentation](http://telemetry.mozilla.org/docs.html) for details on how
-to use it.
+This module can be used exactly like `telemetry.js`, refer to the
+[documentation for `telemetry.js`](http://telemetry.mozilla.org/docs.html)
+for details on how to use it.
 
 ```js
 var Telemetry = require('telemetry-js-node');
