@@ -14,11 +14,10 @@ exports.init = function(cb) {
       }
 
       // Load telemetry.js
-      var ctx = {};
-      vm.runInNewContext(res.text, ctx);
+      vm.runInThisContext(res.text);
 
       // Patch telemetry.js to work under node.js
-      ctx.Telemetry.getUrl = function(url, cb) {
+      Telemetry.getUrl = function(url, cb) {
         request
           .get(url)
           .retry(5)
@@ -34,19 +33,19 @@ exports.init = function(cb) {
               return cb(err);
             }
             // Return body
-            cb(null, res.body);
+            cb(null, JSON.parse(res.text));
         });
       };
 
       // Attach methods to this module
-      for (var method in ctx.Telemetry) {
+      for (var method in Telemetry) {
         if (method === 'init') {
           continue;
         }
-        exports[method] = ctx.Telemetry[method];
+        exports[method] = Telemetry[method];
       }
 
       // Call cb when original telemetry method is initialize
-      ctx.Telemetry.init(cb);
+      Telemetry.init(cb);
     });
 };

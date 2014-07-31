@@ -38,4 +38,28 @@ describe('telemetry-js-node', function() {
              "versions() functions should not be the same");
     });
   });
+
+  it('can filter()', function() {
+    var version = null;
+    var measure = null;
+    return new Promise(function(accept) {
+      Telemetry.init(accept);
+    }).then(function() {
+      version = Telemetry.versions()[0];
+      assert(version, "Should be a version");
+      return new Promise(function(accept) {
+        return Telemetry.measures(version, accept);
+      });
+    }).then(function(measures) {
+      measure = Object.keys(measures)[0];
+      assert(measure, "Should have a measure");
+      return new Promise(function(accept) {
+        return Telemetry.loadEvolutionOverBuilds(version, measure, accept);
+      });
+    }).then(function(hgramEvo) {
+      var option = hgramEvo.filterOptions()[0];
+      assert(option, "Has filter options");
+      hgramEvo.filter(option);
+    });
+  });
 });
