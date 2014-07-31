@@ -21,7 +21,7 @@ Usage
 -----
 This module can be used exactly like `telemetry.js`, refer to the
 [documentation for `telemetry.js`](http://telemetry.mozilla.org/docs.html)
-for details on how to use it.
+for details on how to use it. Below is just a small example.
 
 ```js
 var Telemetry = require('telemetry-js-node');
