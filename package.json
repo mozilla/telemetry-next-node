@@ -1,6 +1,6 @@
 {
   "name":         "telemetry-js-node",
-  "version":      "1.0.0",
+  "version":      "2.0.0",
   "author":       "Jonas Finnemann Jensen <jopsen@gmail.com>",
   "description":  "node.js module for using telemetry.js to access telemetry aggregates from Mozilla Firefox",
   "license":      "MPL-2.0",
