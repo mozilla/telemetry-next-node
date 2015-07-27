@@ -10,7 +10,7 @@ describe('telemetry-js-node', function() {
     return new Promise(function(accept) {
       Telemetry.init(accept);
     }).then(function() {
-      assert(Telemetry.versions, "No versions method available");
+      assert(Telemetry.getVersions, "No versions method available");
     });
   });
 
@@ -18,7 +18,7 @@ describe('telemetry-js-node', function() {
     return new Promise(function(accept) {
       Telemetry.init(accept);
     }).then(function() {
-      assert(Telemetry.versions().length > 0, "No versions available");
+      assert(Telemetry.getVersions().length > 0, "No versions available");
     });
   });
 
@@ -27,39 +27,38 @@ describe('telemetry-js-node', function() {
     return new Promise(function(accept) {
       Telemetry.init(accept);
     }).then(function() {
-      versionFunction = Telemetry.versions;
-      assert(Telemetry.versions, "No versions method available");
+      versionFunction = Telemetry.getVersions;
+      assert(Telemetry.getVersions, "No versions method available");
       return new Promise(function(accept) {
         Telemetry.init(accept);
       });
     }).then(function() {
-      assert(Telemetry.versions, "No versions method available");
-      assert(Telemetry.versions !== versionFunction,
+      assert(Telemetry.getVersions, "No versions method available");
+      assert(Telemetry.getVersions !== versionFunction,
              "versions() functions should not be the same");
     });
   });
 
   it('can filter()', function() {
-    var version = null;
-    var measure = null;
+    var version = "nightly/41";
+    var measure = "GC_MS";
     return new Promise(function(accept) {
       Telemetry.init(accept);
     }).then(function() {
-      version = Telemetry.versions()[0];
-      assert(version, "Should be a version");
+      assert(Telemetry.getVersions()[0], "Should be a version");
       return new Promise(function(accept) {
-        return Telemetry.measures(version, accept);
+        var parts = version.split("/");
+        return Telemetry.getFilterOptions(parts[0], parts[1], accept);
       });
-    }).then(function(measures) {
-      measure = Object.keys(measures)[0];
-      assert(measure, "Should have a measure");
+    }).then(function(filters) {
+      assert(filters.metric[0], "Should have a measure");
       return new Promise(function(accept) {
-        return Telemetry.loadEvolutionOverBuilds(version, measure, accept);
+        var parts = version.split("/");
+        return Telemetry.getEvolution(parts[0], parts[1], measure, {}, false, accept);
       });
-    }).then(function(hgramEvo) {
-      var option = hgramEvo.filterOptions()[0];
-      assert(option, "Has filter options");
-      hgramEvo.filter(option);
+    }).then(function(evolutionMap) {
+      var evolution = evolutionMap[""];
+      assert(evolution.dates, "Has dates");
     });
   });
 });
