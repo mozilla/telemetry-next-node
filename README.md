@@ -1,7 +1,7 @@
 Telemetry.js v2 for Node
 ========================
 
-The `telemetry-js-node` module loads `telemetry.js` from `https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js` and make the functions available in node.js, so that telemetry dashboard aggregates can be analyzed server-side.
+The `telemetry-next-node` module loads `telemetry.js` from `https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js` and make the functions available in node.js, so that telemetry dashboard aggregates can be analyzed server-side.
 
 **Warning**, this module downloads and **loads Javascript code** from `https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js` via HTTPS. If security is very important, run this inside an isolated environment such as a Docker container.
 
@@ -41,4 +41,4 @@ Reloading is necessary for long-running applications to obtain fresh data. An ap
 License
 -------
 
-The `telemetry-js-node` library is released on the MPL license - see `LICENSE` for details.
+The `telemetry-next-node` library is released on the MPL license - see `LICENSE` for details.
