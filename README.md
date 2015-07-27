@@ -1,4 +1,4 @@
-telemetry.js for node.js
+Telemetry.js v2 for Node
 ========================
 
 The `telemetry-js-node` module loads `telemetry.js` from `https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js` and make the functions available in node.js, so that telemetry dashboard aggregates can be analyzed server-side.
