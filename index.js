@@ -2,7 +2,7 @@ require('superagent-retry')(require('superagent'));
 var request = require('superagent');
 var vm      = require('vm');
 
-/** Load and patch telemetry.js for use under node.js */
+/** Load and patch telemetry.js v2 for use under node.js */
 exports.init = function(cb) {
   request
     .get('https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js')
