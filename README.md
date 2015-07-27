@@ -1,63 +1,44 @@
 telemetry.js for node.js
 ========================
 
-The `telemetry-js-node` module loads `telemetry.js` from
-`telemetry.mozilla.org/v1/telemetry.js` and make the functions available in
-node.js, so that telemetry dashboard aggregates can be analyzed server-side.
+The `telemetry-js-node` module loads `telemetry.js` from `https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js` and make the functions available in node.js, so that telemetry dashboard aggregates can be analyzed server-side.
 
-**Warning**, this module downloads and **loads Javascript code** from
-`telemetry.mozilla.org/v1/telemetry.js`. This **poses a security risk**,
-do not run this in mission critical places. Run it somewhere fairly isolated,
-under docker, a non-privileged user or in a LXC container. You have been
-duly warned.
+**Warning**, this module downloads and **loads Javascript code** from `https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js` via HTTPS. If security is very important, run this inside an isolated environment such as a Docker container.
 
-The reasoning behind the decision to load `telemetry.js` dynamically is that
-the storage format used server-side is unstable and we will update
-`telemetry.js` as changes to the server-side storage format occurs. For this
-reason you shouldn't expect this module to work in long running processes,
-reloading it, with `Telemetry.init`, may help.
+For long-running applications, it is recommended that the module be re-initialized every so often in order to obtain new data and account for any aggregate API changes. This can be done by calling `Telemetry.init()` again - see below for details.
 
 Usage
 -----
-This module can be used exactly like `telemetry.js`, refer to the
-[documentation for `telemetry.js`](http://telemetry.mozilla.org/docs.html)
-for details on how to use it. Below is just a small example.
+
+A simple usage example:
 
 ```js
-var Telemetry = require('telemetry-js-node');
+var Telemetry = require('telemetry-next-node');
 
-// Initialize telemetry.js
+// Initialize library
 Telemetry.init(function() {
-  // Find a version
-  var version = Telemetry.versions()[0];
+  var version = Telemetry.getVersions()[0]; // Get the first available version
 
-  // Load measures
-  Telemetry.measures(version, function(measures) {
-
-    // Print measures available
+  // Optain a mapping from filter names to possible values of those filters
+  var parts = version.split("/");
+  Telemetry.getFilterOptions(parts[0], parts[1], function(filters) {
     console.log("Measures available:");
-    Object.keys(measures).forEach(function(measure) {
+    filters.metric.forEach(function(measure) {
       console.log(measure);
     });
   });
-
 });
 ```
 
-**Remark**, until `Telemetry.init(callback)` have executed, this module will
-not have other methods than `Telemetry.init`. In the browser these methods will
-be available, but they will throw an exception if `Telemetry.init` have not
-completed yet. This is a minor difference, that users who don't like trivial
-exceptions won't notice.
+Note that until `Telemetry.init(callback)` executes, this module will not have other methods than `Telemetry.init`. In the browser, these methods will be available, but they will throw an exception if `Telemetry.init` has not completed yet. This is a minor difference, but it may show up if testing for the existance of specific methods in the library.
 
-**Reloading**, just like `telemetry.js` you can reload the version information
-by calling `Telemetry.init()` again. This may also help, if server-side data
-has been updated (which happens multiple times as day). Further more, this will
-also reload `telemetry.js` from `telemetry.mozilla.org/v1/telemetry.js`, hence,
-potentially loading new code. This can help if you have long running code using
-this module, though long running code using this module is not recommended.
+### Reloading
+
+Just like `telemetry.js` in the browser, you can reload version information by calling `Telemetry.init()` again. This also causes the code to be reloaded from `https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js`. Reloading is necessary in order to get updated information, such as aggregates published after the module has been loaded.
+
+Reloading is necessary for long-running applications to obtain fresh data. An application that does not reload may behave erratically if changes are made to the backend.
 
 License
 -------
-The `telemetry-js-node` library is released on the MPL license,
-see the `LICENSE` for details.
+
+The `telemetry-js-node` library is released on the MPL license - see `LICENSE` for details.
