@@ -17,7 +17,8 @@ exports.init = function(cb) {
       vm.runInThisContext(res.text);
 
       // Patch telemetry.js to work under node.js
-      Telemetry.getJSON = function(url, callback) {
+      Telemetry.getJSON = function(url, callback, backoff) {
+        backoff = backoff === undefined ? 500 : backoff;
         if (Telemetry.CACHE[url] !== undefined) {
           if (Telemetry.CACHE[url] !== null && Telemetry.CACHE[url]._loading) { // Requested but not yet loaded
             var requestCallbacks = Telemetry.CACHE[url];
@@ -53,7 +54,14 @@ exports.init = function(cb) {
         requestCallbacks._loading = true;
         Telemetry.CACHE[url] = requestCallbacks; // Mark the URL as being requested but not yet loaded
         var pendingRequest = request.get(url).retry(5).buffer().end(function(err, res) { // Make the request for the JSON result
-          requestCallbacks.forEach(function(requestCallback) { requestCallback(err, res); }); // Dispatch callbacks
+          if (res.status === 503 || res.status === 504 || res.status === 408) { // Service down, try exponential backoff with 8 second upper limit
+            delete Telemetry.CACHE[url];
+            backoff = Math.min(backoff * 2, 8000);
+            console.log("ERROR STATUS 503 FOR URL " + url + ", RETRYING IN " + backoff / 1000 + " SECONDS")
+            setTimeout(function() { Telemetry.getJSON(url, callback, backoff); }, backoff);
+          } else {
+            requestCallbacks.forEach(function(requestCallback) { requestCallback(err, res); }); // Dispatch callbacks
+          }
         });
       }
 
