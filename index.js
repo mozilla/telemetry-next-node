@@ -19,43 +19,20 @@ exports.init = function(cb) {
       // Patch telemetry.js to work under node.js
       Telemetry.getJSON = function(url, callback, backoff) {
         backoff = backoff === undefined ? 500 : backoff;
-        if (Telemetry.CACHE[url] !== undefined) {
-          if (Telemetry.CACHE[url] !== null && Telemetry.CACHE[url]._loading) { // Requested but not yet loaded
-            var requestCallbacks = Telemetry.CACHE[url];
-            requestCallbacks.unshift(function(err, res) {
-              if (err) { callback(null, 0); }
-              else if (!res.ok) { callback(null, res.status); }
-              else { callback(JSON.parse(res.text), null); }
-            });
-            return;
-          } else if ((new Date).getTime() - Telemetry.CACHE_LAST_UPDATED[url] < Telemetry.CACHE_TIMEOUT) { // In cache and hasn't expired
-            setTimeout(function() { callback(Telemetry.CACHE[url], Telemetry.CACHE[url] === null ? 404 : null); }, 1);
-            return;
-          }
-        }
 
         var requestCallbacks = [function(err, res) {
           if (err) {
-            delete Telemetry.CACHE[url];
             callback(null, 0);
           } else if (!res.ok) {
-            if (res.status === 404) { // Cache the null result if the URL resolves to a resource or missing resource
-              Telemetry.CACHE[url] = null; Telemetry.CACHE_LAST_UPDATED[url] = (new Date).getTime();
-            } else {
-              delete Telemetry.CACHE[url];
-            }
             callback(null, res.status);
           } else {
             var result = JSON.parse(res.text);
-            Telemetry.CACHE[url] = result; Telemetry.CACHE_LAST_UPDATED[url] = (new Date).getTime();
             callback(result, null);
           }
         }];
         requestCallbacks._loading = true;
-        Telemetry.CACHE[url] = requestCallbacks; // Mark the URL as being requested but not yet loaded
         var pendingRequest = request.get(url).retry(5).buffer().end(function(err, res) { // Make the request for the JSON result
           if (res.status === 503 || res.status === 504 || res.status === 408) { // Service down, try exponential backoff with 8 second upper limit
-            delete Telemetry.CACHE[url];
             backoff = Math.min(backoff * 2, 8000);
             console.log("ERROR STATUS 503 FOR URL " + url + ", RETRYING IN " + backoff / 1000 + " SECONDS")
             setTimeout(function() { Telemetry.getJSON(url, callback, backoff); }, backoff);
