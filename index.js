@@ -5,7 +5,7 @@ var vm      = require('vm');
 /** Load and patch telemetry.js v2 for use under node.js */
 exports.init = function(cb) {
   request
-    .get('https://anthony-zhang.me/telemetry-dashboard/v2/telemetry.js')
+    .get('https://telemetry.mozilla.org/v2/telemetry.js')
     .buffer()
     .end(function(err, res) {
       // Handle errors
