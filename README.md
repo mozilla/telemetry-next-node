@@ -30,7 +30,7 @@ Telemetry.init(function() {
 });
 ```
 
-Note that until `Telemetry.init(callback)` executes, this module will not have other methods than `Telemetry.init`. In the browser, these methods will be available, but they will throw an exception if `Telemetry.init` has not completed yet. This is a minor difference, but it may show up if testing for the existance of specific methods in the library.
+Note that until `Telemetry.init(callback)` executes, this module will not have other methods than `Telemetry.init`. In the browser, these methods will be available, but they will throw an exception if `Telemetry.init` has not completed yet. This is a minor difference, but it may show up if testing for the existence of specific methods in the library.
 
 ### Reloading
 
